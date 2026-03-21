@@ -1,6 +1,43 @@
+"use client"
+
+import {useState} from "react"
 import UploadBox from "./UploadBox";
 
 export default function PredictionPanel() {
+    const [file, setFile] = useState<File | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const handleUpload = async () => {
+        if (!file) return alert ("Please select a file");
+
+        try {
+            setLoading(true);
+            const formData = new FormData();
+            formData.append("dataset", file)
+
+            const token = localStorage.getItem("token");
+
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/datasets/upload`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                body: formData
+            })
+
+            const data = await res.json();
+            if(!res.ok) {
+                throw new Error(data.message || "Upload Failed");
+            }
+            console.log("Upload Success: ", data);
+            } catch (err: any) {
+                console.log("Upload Failed: ", err.message);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+        }
+    }
     return (
         <div className="w-full md:w-1/2 p-8 flex flex-col justify-start">
             <h2 className="font-semibold mb-2">
@@ -12,9 +49,19 @@ export default function PredictionPanel() {
                 Only .xlsx, .xls, or .csv is allowed.
             </p>
 
-            <UploadBox />
+            <UploadBox file={file} setFile={setFile} />
 
-            <button className="mt-8 w-fit px-6 py-2 bg-green-700 hover:bg-green-600 text-white rounded-md">RUN PREDICTION MODEL</button>
+            {error && (
+                <p className="text-red-500 text-sm mt-2">
+                    {error}
+                </p>
+                )
+            }
+
+            
+            <button onClick={handleUpload} disabled={loading}className="mt-6 bg-green-800 hover:bg-green-700 text-white px-6 py-2 rounded font-semibold disabled:opacity-50">
+                {loading ? "Uploading..." : "RUN PREDICTION MODEL"}
+            </button>
         </div>
     )
 }

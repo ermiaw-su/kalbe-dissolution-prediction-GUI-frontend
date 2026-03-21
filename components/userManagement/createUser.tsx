@@ -17,6 +17,8 @@ export default function createUserForm() {
 
             console.log(baseURL);
 
+            const token = localStorage.getItem("token");
+
             if (!baseURL) {
                 throw new Error("API URL is not defined");
             }
@@ -27,6 +29,7 @@ export default function createUserForm() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
                         username,

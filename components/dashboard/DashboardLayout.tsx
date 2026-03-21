@@ -5,7 +5,6 @@ import ResultPanel from "./ResultPanel";
 export default function DashboardLayput({role}: {role: any}) {
     return (
         <div className="min-h screen bg-gray-100">
-            <DashboardHeader role={role} />
             <div className="flex flex-col md:flex-row bg-white w-full h-[calc(100vh-80px)]">
                 <PredictionPanel /> 
                 <ResultPanel /> 

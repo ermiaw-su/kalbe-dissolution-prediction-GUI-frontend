@@ -1,3 +1,4 @@
+
 "use client";
 
 import styles from "./UserTable.module.css";
@@ -20,13 +21,20 @@ type Props = {
 export default function UserTable({ title, users, type }: Props) {
     const API = process.env.NEXT_PUBLIC_API_URL;
 
+    const getToken = () => {
+        const token = localStorage.getItem("token");
+
+        return {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        };
+    };
+
     const handleDelete = async (id: string) => {
         try {
             const res = await fetch(`${API}/api/users/user/${id}`, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: getToken(),
                 body: JSON.stringify({
                     status: "inactive",
                     role: "nonActive",
@@ -51,9 +59,7 @@ export default function UserTable({ title, users, type }: Props) {
         try {
             const res = await fetch(`${API}/api/users/user/${id}`, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: getToken(),
                 body: JSON.stringify({
                     status: "active",
                     role: "operator",
@@ -84,9 +90,7 @@ export default function UserTable({ title, users, type }: Props) {
         try {
             const res = await fetch(`${API}/api/users/user/${id}`, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: getToken(),
                 body: JSON.stringify({
                     username: newUsername,
                     email: newEmail,
