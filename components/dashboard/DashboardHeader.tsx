@@ -37,7 +37,9 @@ export default function DashboardHeader({role}: Props) {
                     <Link href="/dashboard">
                         <span className="text-green-700 cursor-pointer">PREDICTION MODEL</span>
                     </Link>
-                    <span className="text-gray-500 hover:text-green-700 cursor-pointer">FILE MANAGEMENT</span>
+                    <Link href="/dashboard/fileManagement">
+                        <span className="text-gray-500 hover:text-green-700 cursor-pointer">FILE MANAGEMENT</span>
+                    </Link>
 
                     {role === "administrator" && 
                         <>
