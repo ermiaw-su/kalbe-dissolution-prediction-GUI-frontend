@@ -32,7 +32,7 @@ export default function UserTable({ title, users, type }: Props) {
 
     const handleDelete = async (id: string) => {
         try {
-            const res = await fetch(`${API}/api/users/user/${id}`, {
+            const res = await fetch(`${API}/api/users/deactivate/${id}`, {
                 method: "PUT",
                 headers: getToken(),
                 body: JSON.stringify({
@@ -57,7 +57,7 @@ export default function UserTable({ title, users, type }: Props) {
 
     const handleReactivate = async (id: string) => {
         try {
-            const res = await fetch(`${API}/api/users/user/${id}`, {
+            const res = await fetch(`${API}/api/users/reactivate/${id}`, {
                 method: "PUT",
                 headers: getToken(),
                 body: JSON.stringify({

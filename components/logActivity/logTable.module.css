@@ -1,0 +1,60 @@
+.container {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+/* TITLE */
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* TABLE */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+/* HEADER */
+.table th {
+  background-color: #0b6b53;
+  color: white;
+  padding: 10px;
+  border: 1px solid black;
+  text-align: center;
+}
+
+/* BODY */
+.table td {
+  border: 1px solid black;
+  padding: 8px;
+  text-align: center;
+}
+
+/* ZEBRA ROW */
+.table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* HOVER EFFECT (biar interaktif dikit) */
+.table tr:hover {
+  background-color: #e6f2ef;
+}
+
+/* LINK STYLE (kalau nanti ada detail/log click) */
+.table a {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* EMPTY STATE */
+.empty {
+  text-align: center;
+  padding: 12px;
+  color: gray;
+}
