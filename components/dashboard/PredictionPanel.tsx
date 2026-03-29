@@ -34,6 +34,8 @@ export default function PredictionPanel() {
             } catch (err: any) {
                 console.log("Upload Failed: ", err.message);
                 setError(err.message);
+
+                alert(err.message);
             } finally {
                 setLoading(false);
         }

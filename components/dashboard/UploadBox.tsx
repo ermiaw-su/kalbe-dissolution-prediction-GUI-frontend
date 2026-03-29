@@ -10,6 +10,17 @@ type Props = {
 export default function UploadBox({file, setFile}: Props) {
     const inputRef = useRef<HTMLInputElement>(null);
 
+    const allowedExtentions = [
+        "csv",
+        "xlsx",
+        "xls",
+    ];
+
+    const isValidFile = (file: File) => {
+        const ext = file.name.split(".").pop()?.toLowerCase();
+        return allowedExtentions.includes(ext || "");
+    }
+
     const handleClick = () => {
         inputRef.current?.click();
     }
@@ -17,6 +28,11 @@ export default function UploadBox({file, setFile}: Props) {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
         if (selectedFile) {
+            if (!isValidFile(selectedFile)) {
+                alert("Invalid file type. Only CSV, XLS, and XLSX files are allowed.");
+                e.target.value = "";
+                return;
+            }
             setFile(selectedFile);
         }
     }
@@ -29,6 +45,10 @@ export default function UploadBox({file, setFile}: Props) {
         e.preventDefault();
         const droppedFile = e.dataTransfer.files?.[0];
         if (droppedFile) {
+            if (!isValidFile(droppedFile)) {
+                alert("Invalid file type. Only CSV, XLS, and XLSX files are allowed.");
+                return;
+            }
             setFile(droppedFile);
         }
     }
@@ -40,7 +60,7 @@ export default function UploadBox({file, setFile}: Props) {
     return (
         <div className="border-2 border-dashed border-gray-300 rounded-md p-8 text-center text-gray-600 hover:border-green-500 transition cursor-pointer">
             {/* HIDDEN INPUT */}
-            <input type="file" ref={inputRef} onChange={handleChange} className="hidden" />
+            <input type="file" ref={inputRef} onChange={handleChange} className="hidden" accept=".csv, .xlsx, .xls" />
 
             {/* NO FILE STATE */}
             { !file && (
