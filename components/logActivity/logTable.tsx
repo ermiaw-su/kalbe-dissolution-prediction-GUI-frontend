@@ -13,6 +13,15 @@ type Log = {
 
 export default function LogTable() {
     const [logs, setLogs] = useState<Log[]>([]);
+
+    //Pagination
+    const [page, setPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+
+    //Filter
+    const[userFilter, setUserFilter] = useState("");
+    const[roleFilter, setRoleFilter] = useState("");
+
     const API = process.env.NEXT_PUBLIC_API_URL;
 
     useEffect(() => {
@@ -20,7 +29,14 @@ export default function LogTable() {
             try {
                 const token = localStorage.getItem("token");
 
-                const res = await fetch(`${API}/api/logs`, {
+                const query = new URLSearchParams({
+                    page: String(page),
+                    limit: "10",
+                    user: userFilter,
+                    role: roleFilter,
+                });
+
+                const res = await fetch(`${API}/api/logs?${query}`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -34,18 +50,47 @@ export default function LogTable() {
                 }
 
                 setLogs(data.data || data.logs || []);
+                setTotalPage(data.totalPage || 1);
             } catch (error) {
                 console.log(error);
             }
         };
 
         fetchLogs();
-    }, []);
+    }, [page, userFilter, roleFilter]);
 
     return (
         <div className={styles.container}>
             <h2 className={styles.title}>Activity Log</h2>
 
+            {/*filter*/}
+            <div className={styles.filterContainer}>
+                <input
+                    type="text"
+                    placeholder="Search user..."
+                    value={userFilter}
+                    onChange={(e) => {
+                        setPage(1); // reset page
+                        setUserFilter(e.target.value);
+                    }}
+                    className={styles.input}
+                />
+
+                <select
+                    value={roleFilter}
+                    onChange={(e) => {
+                        setPage(1);
+                        setRoleFilter(e.target.value);
+                    }}
+                    className={styles.select}
+                >
+                    <option value="">All Roles</option>
+                    <option value="administrator">Admin</option>
+                    <option value="operator">Operator</option>
+                </select>
+            </div>
+
+            {/*table*/}
             <table className={styles.table}>
                 <thead>
                     <tr>
@@ -67,7 +112,7 @@ export default function LogTable() {
                     ) : (
                         logs.map((log, index) => (
                             <tr key={log._id}>
-                                <td>{index + 1}</td>
+                                <td>{(page - 1) * 10 + index + 1}</td>
 
                                 <td>{log.description}</td>
 
@@ -83,14 +128,35 @@ export default function LogTable() {
                                         : "-"}
                                 </td>
 
-                                <td>{log.doneBy}</td>
+                                <td>{log.doneBy || "-"}</td>
 
-                                <td>{log.role}</td>
+                                <td>{log.role || "-"}</td>
                             </tr>
                         ))
                     )}
                 </tbody>
             </table>
+
+            {/*Pagination*/}
+            <div className={styles.pagination}>
+                <button
+                    onClick={() => setPage(page - 1)}
+                    disabled={page === 1}
+                >
+                    Prev
+                </button>
+
+                <span>
+                    Page {page} of {totalPage}
+                </span>
+
+                <button
+                    onClick={() => setPage(page + 1)}
+                    disabled={page === totalPage}
+                >
+                    Next
+                </button>
+            </div>
         </div>
     );
 }

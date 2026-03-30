@@ -58,3 +58,28 @@
   padding: 12px;
   color: gray;
 }
+
+.filterContainer {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.pagination {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}

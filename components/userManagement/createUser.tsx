@@ -2,8 +2,13 @@
 
 import {useState} from "react";
 import styles from "./createUser.module.css";
+import styles2 from "./Button.module.css";
 
-export default function createUserForm() {
+type props = {
+  onSuccess: () => void;
+};
+
+export default function CreateUserForm({onSuccess}: props) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -48,7 +53,7 @@ export default function createUserForm() {
                 return;
             }
             alert("User created!")
-            window.location.href = "/dashboard/userManagement";
+            onSuccess?.();
         } catch (error) {
             console.error(error);
             alert("Failed to create user");
@@ -100,8 +105,16 @@ export default function createUserForm() {
           </select>
         </div>
 
-        <button type="submit" className={styles.button}>
-          Create
+        <button 
+            type="button" 
+            className={styles.cancelBtn}
+            onClick={onSuccess} // nutup modal
+        >
+            Cancel
+        </button>
+
+        <button type="submit" className={styles2.button}>
+          Add New User
         </button>
       </form>
     </div>

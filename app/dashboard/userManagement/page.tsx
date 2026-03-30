@@ -2,14 +2,18 @@
 
 import UserTable from "@/components/userManagement/UserTable";
 import Button from "@/components/userManagement/Button";
-import Link from "next/link";
+import Modal from "@/components/Modal";
+import CreateUser from "@/components/userManagement/createUser";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 // Define the User
 type User = {
     _id: string;
+    userId: string;
     username: string;
+    email: string;
     role: string;
     status: "active" | "inactive";
     createdAt: string;
@@ -18,6 +22,8 @@ type User = {
 
 export default function UserManagementPage() {
     const [users, setUsers] = useState<User[]>([]);
+    const [modalOpen, setModalOpen] = useState(false);
+
     const router = useRouter();
 
     useEffect(() => {
@@ -52,7 +58,9 @@ export default function UserManagementPage() {
                 //Format the users
                 const formattedUsers = rawUsers.map((user: any) => ({
                     _id: user._id?.toString(),
+                    userId: user.userId,
                     username: user.username,
+                    email: user.email || user.user_email,
                     role: user.role,
                     status: user.status || "active",
                     createdBy: user.createdBy || user.created_by,
@@ -90,15 +98,29 @@ export default function UserManagementPage() {
                 type="active"
             />
 
-            <Link href="/dashboard/userManagement/createUser">
-                <Button label="Add New User" />
-            </Link>
+            <Button 
+                label="Create User"
+                onClick={() => setModalOpen(true)}
+            />
 
             <UserTable
                 title="List of Inactive Users"
                 users={inactiveUsers}
                 type="inactive"
             />
+
+            <Modal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+            >
+                <CreateUser
+                    onSuccess={() => {
+                        setModalOpen(false);
+                        window.location.reload();
+                    }}
+                />
+
+            </Modal>
         </div>
     );
 }

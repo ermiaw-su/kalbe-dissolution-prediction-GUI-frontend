@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import styles from "./fileTable.module.css";
+import Modal from "@/components/Modal";
+import EditFileForm from "@/components/fileManagement/editFile";
 
 type User = {
     _id: string;
@@ -10,19 +12,30 @@ type User = {
 
 type Report = {
     _id: string;
-    datasetName: string;
+    
+    dataSetId: {
+        _id: string;
+        originalName: string;
+    };
 
-    uploadedBy: User;
-    reportCreatedBy?: User;
+    uploadedBy: {
+        username: string;
+    };
+
+    reportCreatedBy?: {
+        username: string;
+    };
 
     predictionResult: string;
     createdAt: string;
-
     predictionId?: string;
 };
 
 export default function DatasetReportTable() {
     const [data, setData] = useState<Report[]>([]);
+
+    const [showEdit, setShowEdit] = useState(false);
+    const [editFile, setEditFile] = useState<Report | null>(null);
     const API = process.env.NEXT_PUBLIC_API_URL;
 
     useEffect(() => {
@@ -87,6 +100,7 @@ export default function DatasetReportTable() {
                         <th>Prediction Result</th>
                         <th>Report Created By</th>
                         <th>Date</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
 
@@ -100,7 +114,7 @@ export default function DatasetReportTable() {
                             <tr key={item._id}>
                                 <td>{index + 1}</td>
 
-                                <td>{item.datasetName}</td>
+                                <td>{item.dataSetId?.originalName || "-"}</td>
 
                                 <td>
                                     {item.uploadedBy?.username || "-"}
@@ -127,14 +141,50 @@ export default function DatasetReportTable() {
 
                                 <td>
                                     {new Date(item.createdAt).toLocaleDateString(
-                                        "id-ID"
+                                        "id-ID", {
+                                            day: "numeric",
+                                            month: "2-digit",
+                                            year: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        }
                                     )}
+                                </td>
+
+                                <td>
+                                    <button onClick={() => {
+                                        setShowEdit(true)
+                                        setEditFile(item)
+                                    }}>
+                                        Edit
+                                    </button>
+                                    |
+                                    <button>
+                                        Archive
+                                    </button>
                                 </td>
                             </tr>
                         ))
                     )}
                 </tbody>
             </table>
+
+            <Modal
+                isOpen={showEdit}
+                onClose={() => setShowEdit(false)}
+            >
+                {editFile && (
+                    <EditFileForm
+                        file={editFile}
+                        onClose={() => setShowEdit(false)}
+                        onSuccess={() => {
+                            setShowEdit(false);
+                            fetchData();
+                        }}
+                    />
+                )}
+
+            </Modal>
         </div>
     );
 }
