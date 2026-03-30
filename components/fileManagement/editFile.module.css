@@ -1,69 +1,85 @@
 .container {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
+/* TITLE */
 .title {
   text-align: center;
-  font-weight: bold;
   font-size: 22px;
+  font-weight: bold;
   color: #0f5132;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
+/* FORM */
 .formGroup {
-  margin-bottom: 14px;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .label {
   display: block;
   margin-bottom: 6px;
   font-size: 15px;
+  color: #333;
 }
 
-.input,
-.select {
+/* INPUT */
+.input {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 14px;
-  background: white;
+  background: #fff;
+  transition: 0.2s;
 }
 
-.input:focus,
-.select:focus {
+.input:focus {
   outline: none;
   border-color: #198754;
+  box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.15);
 }
 
-.buttonGroup {
+/* BUTTON GROUP */
+.buttonContainer {
   display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  width: 100%;
 }
 
-.cancelBtn {
+/* CANCEL */
+.buttonCancel {
   flex: 1;
-  margin-right: 10px;
   padding: 10px;
   border-radius: 8px;
   border: none;
   background: #d9d9d9;
   cursor: pointer;
+  font-size: 14px;
 }
 
-.submitBtn {
+.buttonCancel:hover {
+  background: #c4c4c4;
+}
+
+/* SAVE / RENAME */
+.buttonSave {
   flex: 1;
   padding: 10px;
   border-radius: 8px;
   border: none;
-  background: #84cc16; /* hijau kayak gambar */
+  background: #84cc16;
   color: black;
   font-weight: 500;
   cursor: pointer;
+  font-size: 14px;
 }
 
-.submitBtn:hover {
+.buttonSave:hover {
   background: #65a30d;
 }

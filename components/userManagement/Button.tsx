@@ -1,9 +1,14 @@
 import styles from "./Button.module.css";
 
 type Props = {
-  label: string;
+    label: string;
+    onClick?: () => void;
 };
 
-export default function Button({ label }: Props) {
-  return <button className={styles.button}>{label}</button>;
+export default function Button({ label, onClick }: Props) {
+    return (
+        <button className={styles.button} onClick={onClick}>
+            {label}
+        </button>
+    );
 }

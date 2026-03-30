@@ -33,3 +33,64 @@
   cursor: pointer;
   text-decoration: underline;
 }
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.confirmBox {
+  background: #f5f5f5;
+  padding: 40px 30px;
+  border-radius: 12px;
+  width: 500px;
+  text-align: center;
+}
+
+.title {
+  color: #0f5132;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.text {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.subText {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 25px;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.noBtn {
+  padding: 10px 30px;
+  border: none;
+  border-radius: 8px;
+  background: #d9d9d9;
+  cursor: pointer;
+}
+
+.yesBtn {
+  padding: 10px 30px;
+  border: none;
+  border-radius: 8px;
+  background: #84cc16;
+  cursor: pointer;
+}
+
+.yesBtn:hover {
+  background: #65a30d;
+}
