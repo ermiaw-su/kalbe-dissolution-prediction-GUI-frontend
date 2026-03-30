@@ -105,7 +105,7 @@ export default function UserTable({ title, users, type }: Props) {
 
     return (
         <div className={styles.container}>
-            <h4>{title}</h4>
+            <h4 className={styles.title}>{title}</h4>
 
             <table className={styles.table}>
                 <thead>
