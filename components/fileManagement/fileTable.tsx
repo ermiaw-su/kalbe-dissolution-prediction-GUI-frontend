@@ -35,6 +35,8 @@ export default function DatasetReportTable() {
     const [data, setData] = useState<Report[]>([]);
 
     const [showEdit, setShowEdit] = useState(false);
+    const [showArchive, setShowArchive] = useState(false);
+    const [selDatasetReport, setSelDatasetReport] = useState<string | null>(null);
     const [editFile, setEditFile] = useState<Report | null>(null);
     const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -82,6 +84,34 @@ export default function DatasetReportTable() {
             if (data.filePath) {
                 window.open(`${API}/${data.filePath}`, "_blank");
             }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleArchive = async () => {
+        if (!selDatasetReport) return;
+
+        try {
+            const token = localStorage.getItem("token");
+
+            const res = await fetch(`${API}/api/dataset-reports/update/${selDatasetReport}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.message);
+                return;
+            }
+
+            setShowArchive(false);
+            fetchData();
         } catch (error) {
             console.log(error);
         }
@@ -159,7 +189,10 @@ export default function DatasetReportTable() {
                                         Edit
                                     </button>
                                     |
-                                    <button>
+                                    <button onClick={() => {
+                                        setShowArchive(true)
+                                        setSelDatasetReport(item._id)
+                                    }}>
                                         Archive
                                     </button>
                                 </td>
@@ -182,6 +215,40 @@ export default function DatasetReportTable() {
                             fetchData();
                         }}
                     />
+                )}
+
+            </Modal>
+
+            <Modal
+                isOpen={showArchive}
+                onClose={() => setShowArchive(false)}
+            >
+                {selDatasetReport && (
+                    <div className={styles.overlay}>
+                        <div className={styles.confirmBox}>
+                            <h2 className={styles.title}>ARCHIVED DATASET REPORT</h2>
+
+                            <p className={styles.text}>
+                                Are you sure you want to deactivate this user?
+                            </p>
+
+                            <div className={styles.buttonGroup}>
+                                <button
+                                    className={styles.noBtn}
+                                    onClick={() => setShowArchive(false)}
+                                >
+                                    No
+                                </button>
+
+                                <button
+                                    className={styles.yesBtn}
+                                    onClick={() => handleArchive()}
+                                >
+                                    Yes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 )}
 
             </Modal>
