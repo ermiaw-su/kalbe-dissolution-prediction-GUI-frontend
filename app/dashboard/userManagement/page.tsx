@@ -97,11 +97,12 @@ export default function UserManagementPage() {
                 users={activeUsers}
                 type="active"
             />
-
-            <Button 
-                label="Create User"
-                onClick={() => setModalOpen(true)}
-            />
+            <div className="ml-5">
+                <Button 
+                    label="Create User"
+                    onClick={() => setModalOpen(true)}
+                />
+            </div>
 
             <UserTable
                 title="List of Inactive Users"

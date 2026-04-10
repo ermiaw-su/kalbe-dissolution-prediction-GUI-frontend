@@ -130,23 +130,27 @@ export default function UserTable({ title, users, type }: Props) {
                             <td>
                                 {type === "active" ? (
                                     <>
+                                    <div className={styles.actionGroup}>
                                         <button onClick={() => {
                                             setEditUser(user);
                                             setShowEdit(true);
-                                        }}>
+                                        }}
+                                        className={styles.buttonAction}>
                                             Edit
                                         </button>
-                                        |
                                         <button onClick={() => {
                                             setSelUserId(user._id);
                                             setShowConfirm(true);
-                                        }}>
+                                        }}
+                                        className={styles.buttonAction}>
                                             Deactivate
                                         </button>
+                                    </div>
                                     </>
                                 ) : (
                                     <button
                                         onClick={() => handleReactivate(user._id)}
+                                        className={styles.buttonAction}
                                     >
                                         Reactivate
                                     </button>

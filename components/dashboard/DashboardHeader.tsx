@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import kalbeLogo from "@/public/images/kalbe-logo.png"
 import userIcon from "@/public/images/user-icon.png"
 import Link from "next/link"
@@ -9,9 +10,38 @@ type Props = {
     role: "administrator" | "operator"
 }
 
+const menuItems = [
+    {
+        label: "PREDICTION MODEL",
+        path: "/dashboard",
+        roles: ["administrator", "operator"],
+    },
+    {
+        label: "FILE MANAGEMENT",
+        path: "/dashboard/fileManagement",
+        roles: ["administrator", "operator"],
+    },
+    {
+        label: "USER MANAGEMENT",
+        path: "/dashboard/userManagement",
+        roles: ["administrator"],
+    },
+    {
+        label: "LOG ACTIVITY",
+        path: "/dashboard/logActivity",
+        roles: ["administrator"],
+    },
+]
+
 export default function DashboardHeader({role}: Props) {
     const [username, setUsername] = useState("")
     const [menu, setMenu] = useState(false)
+
+    const pathname = usePathname()
+
+    const getClass = (path: string) => {
+        return pathname === path ? "text-green-700" : "text-gray-500 hover:text-green-700"
+    }
 
     useEffect(() => {
         const token = localStorage.getItem("token")
@@ -29,28 +59,20 @@ export default function DashboardHeader({role}: Props) {
         window.location.href = "/login"
     }
     return (
-        <div className="flex items-center justify-between px-6 py-4 bg-white shadow-sm">
+        <div className="flex items-center justify-between px-6 py-4 bg-white">
             {/* LOGO + MENU */}
             <div className="flex items-center gap-6">
                 <img src={kalbeLogo.src} alt="kalbe-logo" className="h-10 w-auto object-contain" />
                 <div className="flex gap-6 text-sm font-medium">
-                    <Link href="/dashboard">
-                        <span className="text-green-700 cursor-pointer">PREDICTION MODEL</span>
-                    </Link>
-                    <Link href="/dashboard/fileManagement">
-                        <span className="text-gray-500 hover:text-green-700 cursor-pointer">FILE MANAGEMENT</span>
-                    </Link>
-
-                    {role === "administrator" && 
-                        <>
-                            <Link href="/dashboard/userManagement">
-                                <span className="text-gray-500 hover:text-green-700 cursor-pointer">USER MANAGEMENT</span>
+                    {menuItems
+                        .filter(item => item.roles.includes(role))
+                        .map(item => (
+                            <Link key={item.path} href={item.path}>
+                                <span className={`${getClass(item.path)} cursor-pointer`}>
+                                    {item.label}
+                                </span>
                             </Link>
-
-                            <Link href="/dashboard/logActivity">
-                                <span className="text-gray-500 hover:text-green-700 cursor-pointer">LOG ACTIVITY</span>
-                            </Link>
-                        </>
+                        ))
                     }
                 </div>
             </div>

@@ -1,38 +1,38 @@
 "use client"
 
-import DashboardHeader from "@/components/dashboard/DashboardHeader"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import DashboardHeader from "@/components/dashboard/DashboardHeader"
 
 export default function DashboardLayout({
-  children
+    children,
 }: {
-  children: React.ReactNode
+    children: React.ReactNode
 }) {
-  const router = useRouter()
-  const [role, setRole] = useState<"administrator" | "operator">("operator")
+    const [role, setRole] = useState<"administrator" | "operator" | null>(null)
+    const router = useRouter()
 
-  useEffect(() => {
-    const token = localStorage.getItem("token")
+    useEffect(() => {
+        const token = localStorage.getItem("token")
 
-    if (!token) {
-      router.push("/login")
-      return
-    }
+        if (!token) {
+            router.push("/login")
+        } else {
+            try {
+                const payload = JSON.parse(atob(token.split(".")[1]))
+                setRole(payload.role)
+            } catch {
+                router.push("/login")
+            }
+        }
+    }, [])
 
-    // TEMP (later we decode JWT)
-    setRole("administrator")
-  }, [])
+    if (!role) return null
 
-  return (
-    <div className="min-h-screen bg-white-100 flex flex-col">
-
-      <DashboardHeader role={role} />
-
-      <main className="flex-1 p-6">
-        {children}
-      </main>
-
-    </div>
-  )
+    return (
+        <div className="min-h-screen flex flex-col">
+            <DashboardHeader role={role} />
+            <div className="flex-1">{children}</div>
+        </div>
+    )
 }
