@@ -65,9 +65,11 @@ export default function DatasetReportTable() {
 
     const [page, setPage] = useState(1);
     const [archivedPage, setArchivedPage] = useState(1);
+    const [reportPage, setReportPage] = useState(1);
     
     const [totalPage, setTotalPage] = useState(1);
     const [archivedTotalPage, setArchivedTotalPage] = useState(1);
+    const [reportTotalPage, setReportTotalPage] = useState(1);
     const [sort, setSort] = useState("asc");
     const API = process.env.NEXT_PUBLIC_DATASET_API;
 
