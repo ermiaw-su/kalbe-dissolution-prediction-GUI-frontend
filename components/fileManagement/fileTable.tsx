@@ -29,19 +29,18 @@ type Report = {
         originalName: string;
     };
 
-    uploadedBy: {
-        username: string;
-    };
+    datasetName: string;
+
+    uploadedBy: String;
 
     uploadedOn: string;
 
-    reportCreatedBy?: {
-        username: string;
-    };
+    reportCreatedBy: string;
 
     predictionResult: string;
     createdAt: string;
     predictionId?: string;
+    reportPath?: string;
 };
 
 export default function DatasetReportTable() {
@@ -600,10 +599,10 @@ export default function DatasetReportTable() {
                             <tr key={item._id}>
                                 <td>{index + 1}</td>
 
-                                <td>{item.dataSetId?.originalName || "-"}</td>
+                                <td>{item.datasetName}</td>
 
                                 <td>
-                                    {item.uploadedBy?.username || "-"}
+                                    {item.uploadedBy}
                                 </td>
 
                                 <td>
@@ -615,9 +614,9 @@ export default function DatasetReportTable() {
                                         hour: "2-digit",
                                         minute: "2-digit",
                                         second: "2-digit",
-                                    }).format(new Date(item.uploadedOn)) +
+                                    }).format(new Date(item.createdAt)) +
                                     "." +
-                                    String(new Date(item.uploadedOn).getMilliseconds()).padStart(3, "0")}
+                                    String(new Date(item.createdAt).getMilliseconds()).padStart(3, "0")}
                                 </td>
 
                                 <td>
@@ -636,7 +635,7 @@ export default function DatasetReportTable() {
                                 </td>
 
                                 <td>
-                                    {item.reportCreatedBy?.username || "-"}
+                                    {item.reportCreatedBy}
                                 </td>
 
                                 <td>
