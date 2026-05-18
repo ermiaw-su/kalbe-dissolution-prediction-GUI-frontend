@@ -317,10 +317,6 @@ export default function ResultPanel({
                         </th>
 
                         <th className="border p-2">
-                            Actual (%)
-                        </th>
-
-                        <th className="border p-2">
                             Predicted (%)
                         </th>
 
@@ -340,10 +336,6 @@ export default function ResultPanel({
 
                             <td className="border p-2 text-center">
                                 {item.time_point}
-                            </td>
-
-                            <td className="border p-2 text-center">
-                                {item.actual_dissolution_pct}
                             </td>
 
                             <td className="border p-2 text-center">
