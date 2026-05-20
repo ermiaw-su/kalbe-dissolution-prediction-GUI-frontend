@@ -6,15 +6,22 @@ import Popup from "../PopUp";
 type Props = {
     file: File | null
     setFile: (file: File | null) => void
+
+    setDatasetId: (id: string) => void
 }
 
-export default function UploadBox({file, setFile}: Props) {
+export default function UploadBox({file, setFile, setDatasetId}: Props) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     const [popup, setPopup] = useState({
         show: false,
         message: ""
     });
+
+    const [datasetInfo, setDatasetInfo] = useState<{
+        rowCount: number
+        totalBatch: number
+    } | null>(null)
 
     const allowedExtensions = [".xls", ".xlsx"]
 
@@ -33,6 +40,51 @@ export default function UploadBox({file, setFile}: Props) {
         return true;
     }
 
+    const uploadDataset = async (selectedFile: File) => {
+        try {
+            const token = localStorage.getItem("token");
+
+            const formData = new FormData();
+            formData.append("dataset", selectedFile);
+
+            const res = await fetch(`${process.env.NEXT_PUBLIC_DATASET_API}/api/datasets/upload`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                setPopup({
+                    show: true,
+                    message: data.message
+                });
+                return;
+            }
+
+            setDatasetId(data.dataset._id)
+
+            setDatasetInfo({
+                rowCount: data.dataset.rowCount,
+                totalBatch: data.totalBatch
+            })
+
+            setPopup({
+                show: true,
+                message: "Dataset uploaded successfully"
+            });
+
+        } catch (error: any) {
+            setPopup({
+                show: true,
+                message: error.message
+            });
+        }
+    }
+
     const handleClick = () => {
         inputRef.current?.click();
     }
@@ -43,6 +95,8 @@ export default function UploadBox({file, setFile}: Props) {
 
         if (!validateFile(selectedFile)) return;
         setFile(selectedFile);
+
+        uploadDataset(selectedFile);
     };
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -57,6 +111,8 @@ export default function UploadBox({file, setFile}: Props) {
 
         if (!validateFile(droppedFile)) return;
         setFile(droppedFile);
+
+        uploadDataset(droppedFile);
     };
 
     const handleRemove = () => {
@@ -84,16 +140,44 @@ export default function UploadBox({file, setFile}: Props) {
             }
 
             {/* HAS FILE STATE */}
-            { file && (
-                <div className="mt-4 text-center">
-                    <div className="border-2 border-dashed border-gray-3400 rounded-md p-8">
-                        <p className="text-blue-600 font-medium">{file.name} uploaded</p>
+            {file && (
+                <>
+                    {datasetInfo && (
+                        <div className="mt-3 text-sm text-gray-700">
+                            <p>
+                                Total Rows: {datasetInfo.rowCount}
+                            </p>
+
+                            <p>
+                                Total Batch: {datasetInfo.totalBatch}
+                            </p>
+                        </div>
+                    )}
+
+                    <div className="mt-4 text-center">
+                        <div className="border-2 border-dashed border-gray-300 rounded-md p-8">
+                            <p className="text-blue-600 font-medium">
+                                {file.name} uploaded
+                            </p>
+                        </div>
+
+                        <div className="flex justify-center gap-3 mt-3">
+                            <button
+                                onClick={handleRemove}
+                                className="px-4 py-1 text-sm bg-gray-300 rounded hover:bg-gray-400"
+                            >
+                                Remove
+                            </button>
+
+                            <button
+                                onClick={handleClick}
+                                className="px-4 py-1 text-sm bg-green-500 rounded hover:bg-green-600 text-white"
+                            >
+                                Replace
+                            </button>
+                        </div>
                     </div>
-                    <div className="flex justify-center gap-3 mt-3">
-                        <button onClick={handleRemove} className="px-4 py-1 text-sm bg-gray-300 rounded hover:bg-gray-400">Remove</button>
-                        <button onClick={handleClick} className="px-4 py-1 text-sm bg-green-500 rounded hover:bg-green-600 text-white">Replace</button>
-                    </div>
-                </div>
+                </>
             )}
             <Popup
                 isOpen={popup.show}

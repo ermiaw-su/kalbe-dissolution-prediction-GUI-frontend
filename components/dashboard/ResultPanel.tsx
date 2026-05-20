@@ -299,80 +299,70 @@ export default function ResultPanel({
                 <img
                     src={graphUrl}
                     alt="Prediction Graph"
-                    className="w-full rounded"
+                    className="w-full max-h-[300px] object-contain rounded"
                 />
 
             </div>
 
             {/* RESULT TABLE */}
 
-            <table className="w-full mt-6 border border-collapse">
+                <table className="w-full mt-6 border border-collapse">
 
-                <thead>
+                    <thead>
 
-                    <tr className="bg-green-700 text-white">
+                        <tr className="bg-green-700 text-white">
 
-                        <th className="border p-2">
-                            Time Point
-                        </th>
+                            <th className="border p-2">
+                                Time Point
+                            </th>
 
-                        <th className="border p-2">
-                            Actual (%)
-                        </th>
+                            <th className="border p-2">
+                                Predicted (%)
+                            </th>
 
-                        <th className="border p-2">
-                            Predicted (%)
-                        </th>
-
-                        <th className="border p-2">
-                            Status
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {representativeResult.map((item: any, index: number) => (
-
-                        <tr key={index}>
-
-                            <td className="border p-2 text-center">
-                                {item.time_point}
-                            </td>
-
-                            <td className="border p-2 text-center">
-                                {item.actual_dissolution_pct}
-                            </td>
-
-                            <td className="border p-2 text-center">
-                                {item.predicted_dissolution_pct}
-                            </td>
-
-                            <td className="border p-2 text-center">
-
-                                <span
-                                    className={
-                                        item.ok_nok === "OK"
-                                            ? "text-green-700 font-semibold"
-                                            : "text-red-600 font-semibold"
-                                    }
-                                >
-                                    {item.ok_nok}
-                                </span>
-
-                            </td>
+                            <th className="border p-2">
+                                Status
+                            </th>
 
                         </tr>
 
-                    ))}
+                    </thead>
 
-                </tbody>
+                    <tbody>
 
-                
+                        {representativeResult.map((item: any, index: number) => (
 
-            </table>
+                            <tr key={index}>
+
+                                <td className="border p-2 text-center">
+                                    {item.time_point}
+                                </td>
+
+                                <td className="border p-2 text-center">
+                                    {item.predicted_dissolution_pct}
+                                </td>
+
+                                <td className="border p-2 text-center">
+
+                                    <span
+                                        className={
+                                            item.ok_nok === "OK"
+                                                ? "text-green-700 font-semibold"
+                                                : "text-red-600 font-semibold"
+                                        }
+                                    >
+                                        {item.ok_nok}
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                        ))}
+
+                    </tbody>
+
+                </table>
 
             {/* DOWNLOAD BUTTON */}
 

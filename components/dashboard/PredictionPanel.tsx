@@ -26,12 +26,22 @@ export default function PredictionPanel({
         message: ""
     })
 
+    const [datasetId, setDatasetId] = useState("")
+
     const handleRunPrediction = async () => {
 
         if (!file) {
             setPopup({
                 show: true,
                 message: "Please select a dataset file"
+            })
+            return
+        }
+
+        if (!datasetId) {
+            setPopup({
+                show: true,
+                message: "Dataset not uploaded yet"
             })
             return
         }
@@ -43,42 +53,6 @@ export default function PredictionPanel({
             const token = localStorage.getItem("token")
 
             /*
-                STEP 1
-                UPLOAD DATASET
-            */
-
-            const formData = new FormData()
-
-            formData.append("dataset", file)
-
-            const uploadRes = await fetch(
-                `${process.env.NEXT_PUBLIC_DATASET_API}/api/datasets/upload`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    },
-                    body: formData
-                }
-            )
-
-            const uploadData = await uploadRes.json()
-
-            if (!uploadRes.ok) {
-                throw new Error(
-                    uploadData.message || "Dataset upload failed"
-                )
-            }
-
-            /*
-                STEP 2
-                GET DATASET ID
-            */
-
-            const datasetId = uploadData.dataset._id
-
-            /*
-                STEP 3
                 RUN PREDICTION
             */
 
@@ -105,15 +79,10 @@ export default function PredictionPanel({
             }
 
             /*
-                STEP 4
-                SAVE RESULT TO PARENT STATE
+                SAVE RESULT
             */
 
             setPredictionResult(predictionData.prediction)
-
-            /*
-                SUCCESS POPUP
-            */
 
             setPopup({
                 show: true,
@@ -156,6 +125,7 @@ export default function PredictionPanel({
             <UploadBox
                 file={file}
                 setFile={setFile}
+                setDatasetId={setDatasetId}
             />
 
             {error && (

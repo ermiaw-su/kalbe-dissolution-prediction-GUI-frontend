@@ -641,6 +641,8 @@ export default function DatasetReportTable() {
             </div>
 
             {/* Dataset Report */}
+            <h2 className={styles.title}>Reports</h2>
+
             <table className={styles.table}>
                 <thead>
                     <tr>
@@ -729,15 +731,6 @@ export default function DatasetReportTable() {
 
                                 <td>
                                     <div className={styles.actionGroup}>
-                                        <button
-                                            onClick={() => {
-                                                setShowEditReport(true)
-                                                setEditReport(item)
-                                            }}
-                                            className={styles.buttonAction}
-                                        >
-                                            Edit
-                                        </button>
 
                                         <button
                                             className={styles.buttonAction}
