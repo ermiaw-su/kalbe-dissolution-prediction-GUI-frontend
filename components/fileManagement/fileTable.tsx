@@ -47,6 +47,7 @@ export default function DatasetReportTable() {
     const [file, setFile] = useState<File | null>(null);
     const [datasets, setDatasets] = useState<Dataset[]>([]);
     const [archivedDatasets, setArchivedDatasets] = useState<Dataset[]>([]);
+    const [archivedReports, setArchivedReports] = useState<Report[]>([]);
     const [reports, setReports] = useState<Report[]>([]);
 
     const [showEditDataset, setShowEditDataset] = useState(false);
@@ -66,10 +67,12 @@ export default function DatasetReportTable() {
     const [page, setPage] = useState(1);
     const [archivedPage, setArchivedPage] = useState(1);
     const [reportPage, setReportPage] = useState(1);
+    const [archivedReportPage, setArchivedReportPage] = useState(1);
     
     const [totalPage, setTotalPage] = useState(1);
     const [archivedTotalPage, setArchivedTotalPage] = useState(1);
     const [reportTotalPage, setReportTotalPage] = useState(1);
+    const [archivedReportTotalPage, setArchivedReportTotalPage] = useState(1);
     const [sort, setSort] = useState("asc");
     const API = process.env.NEXT_PUBLIC_DATASET_API;
 
@@ -82,7 +85,8 @@ export default function DatasetReportTable() {
         fetchDatasetReport();
         fetchDataset();
         fetchArchivedDataset();
-    }, [page, archivedPage, sort]);
+        fetchArchivedReport();
+    }, [page, archivedPage, reportPage, archivedReportPage, sort]);
 
     const fetchDatasetReport = async () => {
         try {
@@ -152,6 +156,65 @@ export default function DatasetReportTable() {
             console.log(error);
         }
     };
+
+    const fetchArchivedReport = async () => {
+        try {
+            const token = localStorage.getItem("token");
+
+            const query = new URLSearchParams({
+                page: String(archivedReportPage),
+                limit: "10",
+                sort: sort,
+            });
+
+            const res = await fetch(`${API}/api/reports/archived?${query}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                cache: "no-store",
+            });
+
+            const result = await res.json();
+
+            setArchivedReports(result.data || []);
+            setArchivedReportTotalPage(result.totalPage || 1);
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleActivateReport = async (id: string) => {
+        if (!id) return;
+
+        try {
+            const token = localStorage.getItem("token");
+
+            const res = await fetch(`${API}/api/reports/activate/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                setPopup({
+                    show: true,
+                    message: data.message
+                });
+                return;
+            }
+
+            fetchDatasetReport();
+            fetchArchivedReport();
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const handleExport = async (predictionId?: string) => {
         if (!predictionId) {
@@ -285,6 +348,7 @@ export default function DatasetReportTable() {
 
             setShowArchiveReport(false);
             fetchDatasetReport();
+            fetchArchivedReport();
         } catch (error) {
             console.log(error);
         }
@@ -331,7 +395,7 @@ export default function DatasetReportTable() {
 
     return (
         <div className={styles.container}>
-            <h2 className={styles.title}>Dataset Report</h2>
+            <h2 className={styles.title}>Datasets</h2>
 
         {/* Dataset */}
             <table className={styles.table}>
@@ -607,18 +671,24 @@ export default function DatasetReportTable() {
                                     {item.uploadedBy}
                                 </td>
 
+                                {/* Uploaded On = Dataset Upload Time */}
                                 <td>
-                                    {new Intl.DateTimeFormat("id-ID", {
-                                        timeZone: "Asia/Jakarta",
-                                        year: "numeric",
-                                        month: "2-digit",
-                                        day: "2-digit",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                        second: "2-digit",
-                                    }).format(new Date(item.createdAt)) +
-                                    "." +
-                                    String(new Date(item.createdAt).getMilliseconds()).padStart(3, "0")}
+                                    {item.uploadedOn &&
+                                    !isNaN(new Date(item.uploadedOn).getTime())
+                                        ? new Intl.DateTimeFormat("id-ID", {
+                                            timeZone: "Asia/Jakarta",
+                                            year: "numeric",
+                                            month: "2-digit",
+                                            day: "2-digit",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            second: "2-digit",
+                                        }).format(new Date(item.uploadedOn)) +
+                                        "." +
+                                        String(
+                                            new Date(item.uploadedOn).getMilliseconds()
+                                        ).padStart(3, "0")
+                                        : "-"}
                                 </td>
 
                                 <td>
@@ -640,6 +710,7 @@ export default function DatasetReportTable() {
                                     {item.reportCreatedBy}
                                 </td>
 
+                                {/* Report Created On = Report Creation Time */}
                                 <td>
                                     {new Intl.DateTimeFormat("id-ID", {
                                         timeZone: "Asia/Jakarta",
@@ -651,19 +722,25 @@ export default function DatasetReportTable() {
                                         second: "2-digit",
                                     }).format(new Date(item.createdAt)) +
                                     "." +
-                                    String(new Date(item.createdAt).getMilliseconds()).padStart(3, "0")}
+                                    String(
+                                        new Date(item.createdAt).getMilliseconds()
+                                    ).padStart(3, "0")}
                                 </td>
 
                                 <td>
                                     <div className={styles.actionGroup}>
-                                        <button onClick={() => {
-                                            setShowEditReport(true)
-                                            setEditReport(item)
-                                        }}
-                                        className={styles.buttonAction}>
+                                        <button
+                                            onClick={() => {
+                                                setShowEditReport(true)
+                                                setEditReport(item)
+                                            }}
+                                            className={styles.buttonAction}
+                                        >
                                             Edit
                                         </button>
-                                        <button className={styles.buttonAction}
+
+                                        <button
+                                            className={styles.buttonAction}
                                             onClick={() => {
                                                 setShowArchiveReport(true)
                                                 setSelDatasetReport(item._id)
@@ -678,6 +755,156 @@ export default function DatasetReportTable() {
                     )}
                 </tbody>
             </table>
+
+            {/* Report Pagination */}
+            <div 
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "10px",
+                    marginTop: "20px"
+                }}
+            >
+                <button
+                    onClick={() => setReportPage(reportPage - 1)}
+                    disabled={reportPage === 1}
+                    className={styles.buttonAction}
+                >
+                    Prev
+                </button>
+
+                <span>
+                    Page {reportPage} of {reportTotalPage}
+                </span>
+
+                <button
+                    onClick={() => setReportPage(reportPage + 1)}
+                    disabled={reportPage === reportTotalPage}
+                    className={styles.buttonAction}
+                >
+                    Next
+                </button>
+            </div>
+
+            {/* Archived Reports */}
+            <h2 className={styles.title}>Archived Reports</h2>
+
+            <table className={styles.table}>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Dataset</th>
+                        <th>Uploaded By</th>
+                        <th>Uploaded On</th>
+                        <th>Prediction Result</th>
+                        <th>Report Created By</th>
+                        <th>Report Created On</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {archivedReports.length === 0 ? (
+                        <tr>
+                            <td colSpan={8}>No data</td>
+                        </tr>
+                    ) : (
+                        archivedReports.map((item, index) => (
+                            <tr key={item._id}>
+                                <td>
+                                    {(archivedReportPage - 1) * 10 + index + 1}
+                                </td>
+
+                                <td>{item.datasetName || "-"}</td>
+
+                                <td>{item.uploadedBy || "-"}</td>
+
+                                {/* Uploaded On = Dataset Upload Time */}
+                                <td>
+                                    {item.uploadedOn &&
+                                    !isNaN(new Date(item.uploadedOn).getTime())
+                                        ? new Intl.DateTimeFormat("id-ID", {
+                                            timeZone: "Asia/Jakarta",
+                                            year: "numeric",
+                                            month: "2-digit",
+                                            day: "2-digit",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            second: "2-digit",
+                                        }).format(new Date(item.uploadedOn)) +
+                                        "." +
+                                        String(
+                                            new Date(item.uploadedOn).getMilliseconds()
+                                        ).padStart(3, "0")
+                                        : "-"}
+                                </td>
+
+                                <td>{item.predictionResult || "-"}</td>
+
+                                <td>{item.reportCreatedBy || "-"}</td>
+
+                                {/* Report Created On = Report Creation Time */}
+                                <td>
+                                    {new Intl.DateTimeFormat("id-ID", {
+                                        timeZone: "Asia/Jakarta",
+                                        year: "numeric",
+                                        month: "2-digit",
+                                        day: "2-digit",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        second: "2-digit",
+                                    }).format(new Date(item.createdAt)) +
+                                    "." +
+                                    String(
+                                        new Date(item.createdAt).getMilliseconds()
+                                    ).padStart(3, "0")}
+                                </td>
+
+                                <td>
+                                    <button
+                                        className={styles.buttonAction}
+                                        onClick={() =>
+                                            handleActivateReport(item._id)
+                                        }
+                                    >
+                                        Activate
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+            </table>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "10px",
+                    marginTop: "20px"
+                }}
+            >
+                <button
+                    onClick={() => setArchivedReportPage(archivedReportPage - 1)}
+                    disabled={archivedReportPage === 1}
+                    className={styles.buttonAction}
+                >
+                    Prev
+                </button>
+
+                <span>
+                    Page {archivedReportPage} of {archivedReportTotalPage}
+                </span>
+
+                <button
+                    onClick={() => setArchivedReportPage(archivedReportPage + 1)}
+                    disabled={archivedReportPage === archivedReportTotalPage}
+                    className={styles.buttonAction}
+                >
+                    Next
+                </button>
+            </div>
 
             {/* Dataset */}
             <Modal
